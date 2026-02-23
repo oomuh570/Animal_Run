@@ -1,13 +1,8 @@
 # Animal Run
 
-> An endless survival game for the Atari ST, built in C as part of COMP 2659 (Fall 2024).
+> Endless survival game for the Atari ST built in C — collect coins, avoid monsters, don't die.
 
-<table>
-  <tr>
-    <td><img src="mmAR.png" width="400"/></td>
-    <td><img src="AR_gameplay.png" width="400"/></td>
-  </tr>
-</table>
+<img width="1280" alt="Animal Run Main Menu" src="https://github.com/user-attachments/assets/c45106bb-96a4-46a4-b08d-df164afd6c40" />
 
 ---
 
@@ -28,6 +23,8 @@ The character automatically moves horizontally across the screen at a constant s
 - **Q** — Quit the game
 
 Collect coins to increase your score. Avoid the monster — one hit and it's game over. When the character reaches the right edge of the screen, it wraps around to the left.
+
+<img width="1280" alt="Animal Run Gameplay" src="https://github.com/user-attachments/assets/3cc20ba7-afd8-4b11-9d39-41090285bec1" />
 
 ### Scoring
 - Each coin collected = **+1 point**
@@ -60,7 +57,7 @@ Collect coins to increase your score. Avoid the monster — one hit and it's gam
 
 ---
 
-## 🖥️ Technical Details
+## Technical Details
 
 The game targets the **Atari ST** and is written in **C** with some assembly for performance-critical routines.
 
@@ -113,20 +110,9 @@ The game targets the **Atari ST** and is written in **C** with some assembly for
 
 ---
 
-## Building
-
-Requires a cross-compilation toolchain targeting the Atari ST (e.g., **VASM** / **GCC for m68k**).
-
-```bash
-make        # Build the game
-make test   # Build and run test drivers
-```
-
----
-
 ## Authors
 
 - **Jacky On**
 - **Ochihai Omuha**
 
-COMP 2659 — Computing Machinery II, Fall 2024  
+COMP 2659 — Computing Machinery II, Fall 2024
