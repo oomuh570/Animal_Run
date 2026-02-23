@@ -1,21 +1,132 @@
 # Animal Run
 
-## General Game Overview
+> An endless survival game for the Atari ST, built in C as part of COMP 2659 (Fall 2024).
 
-Animal Run is an endless survival game that involves one character, a single monster and coins. The game-playing area is the entire screen. The game's objective is to get as high of a score as possible by collecting coins without colliding with any monsters. In Animal Run, the character automatically moves horizontally from left to right. Vertical movement is controlled by the player: pressing the spacebar makes the character jump (a short, upward burst followed by falling due to gravity), while holding the "W" key allows the character to fly (sustained upward movement counteracting gravity).  The game begins with the character starting on the left side of the screen. Coins and monsters are spawned with both of them being stationary. Only the vertical movement of the character is controlled. The game ends when the character collides with any of the monsters the option to play again or quit. The character will stay at a constant horizontal velocity when moving or flying but will change the horizontal velocity when jumping while the vertical velocity changes when falling, jumping or flying unless the character has landed or when the animal reaches the top of the screen then the vertical velocity will be zero. When the character reaches the right side of the screen and goes “off” the screen, it will appear on the left side. The game's boundary is the screen's top and the ground.
+<table>
+  <tr>
+    <td><img src="mmAR.png" width="400"/></td>
+    <td><img src="AR_gameplay.png" width="400"/></td>
+  </tr>
+</table>
 
-<img width="500" alt="image" src="https://github.com/user-attachments/assets/edca8715-1e44-4f3e-9428-ec459d4f78ad" />
+---
 
-## Objectives and Rules
+## Overview
 
-Animal Run is an endless survival game where the objective is to get as high of a score as possible by collecting coins without colliding with any monsters. Each coin collected increases the player's score by 1 point, and the score never decreases throughout the game. The game ends when the character collides with a monster, triggering the game menu screen with the option to play again or quit. At any point in the game, a maximum of 5 coins can be present. Each coin collected increases the player's score by 1 point, and the score never decreases throughout the game. The game ends when the character collides with a monster, triggering the game menu screen with the option to play again or quit. At any point in the game, a maximum of 5 coins can be present on the screen simultaneously and the monster will always be shown on the screen.
+Animal Run is a fast-paced, endless survival game where you control a chicken navigating a dangerous world full of monsters and collectible coins. The goal is simple: survive as long as possible and rack up the highest score you can.
 
-The game begins when the spacebar is pressed, spawning the character on the left side of the screen on the ground and generating coins randomly across the screen with having to be above the ground and monster around the middle of the screen in front of the character. The character automatically starts moving horizontally at a velocity, and the player controls its upward vertical movement by pressing spacebar to make the character jump or holding the ‘w’ key to make it fly. As the character reaches the right edge of the screen, the character reappears on the left side, maintaining its continuous motion. The game-playing area is bounded vertically by the top of the screen and the ground.
+The game was developed for the **Atari ST** platform in C, featuring low-level raster graphics, custom ISRs, double-buffered animation, and PSG-driven music and sound effects.
 
+---
 
+## Gameplay
 
-## Authors 
+The character automatically moves horizontally across the screen at a constant speed. You control only its vertical movement:
 
-Jacky On, Ochihai Omuha
+- **Spacebar** — Jump (burst of vertical + extra horizontal velocity)
+- **W (hold)** — Fly (sustained upward movement against gravity)
+- **Q** — Quit the game
 
+Collect coins to increase your score. Avoid the monster — one hit and it's game over. When the character reaches the right edge of the screen, it wraps around to the left.
 
+### Scoring
+- Each coin collected = **+1 point**
+- Score never decreases
+- Up to **5 coins** on screen at once; all 5 respawn when collected
+
+---
+
+## Physics & Movement
+
+| Action | Vertical Velocity | Horizontal Velocity |
+|---|---|---|
+| Normal movement | — | 8 px/tick |
+| Flying (W held) | 15 px/tick upward | 8 px/tick |
+| Jump (Spacebar) | +100 px/tick | +200 px/tick |
+| Falling | −10 px/tick | constant |
+| At screen top | 0 (hovering) | 8 px/tick |
+| Landed | 0 | 8 px/tick |
+
+---
+
+## Game Objects
+
+| Object | Size | Description |
+|---|---|---|
+| **Character (Chicken)** | 64×64 px | Player-controlled; moves horizontally, flies/jumps vertically |
+| **Monster** | 64×64 px | Stationary; spawns near center of screen; ends game on collision |
+| **Coin** | 16×16 px | Stationary; randomly placed above ground; up to 5 on screen |
+| **Ground** | Full width | Horizontal boundary at y=320; character cannot go below |
+
+---
+
+## 🖥️ Technical Details
+
+The game targets the **Atari ST** and is written in **C** with some assembly for performance-critical routines.
+
+### Architecture
+- **Model** (`model.c/h`) — Game state, object properties, physics
+- **Renderer** (`renderer.c/h`) — Frame rendering, bitmap blitting
+- **Raster** (`raster.c`, `rast_asm.s`) — Low-level plotting routines (no OS/library calls)
+- **Events** (`events.c/h`) — Asynchronous (input) and synchronous (timer) event handlers
+- **Input** (`input.c/h`) — Three-level input abstraction
+- **PSG** (`psg.c/h`) — Programmable Sound Generator: tones, noise, envelopes
+- **Music** (`music.c/h`) — Background music playback
+- **Effects** (`effects.c/h`) — Sound effect triggers
+- **ISRs** — Custom VBL interrupt service routine for timing and double-buffered page flipping
+
+### Graphics
+- **640×400** monochrome display
+- Double-buffered rendering (flicker and tear-free)
+- 256-byte-aligned second frame buffer
+- Custom 1bpp bitmap assets for all game objects
+
+### Sound
+| Effect | Trigger |
+|---|---|
+| Ding | Coin collected |
+| Bop | Character jumps |
+| Du | Monster collision (game over) |
+| Background music | Continuous during gameplay |
+
+---
+
+## Project Structure
+
+```
+/
+├── main.c           # Main game loop, initialization, termination
+├── model.c/h        # Game world state and object manipulation
+├── events.c/h       # Event handlers (async, sync, condition-based)
+├── renderer.c/h     # Master render routine and object renderers
+├── raster.c/h       # Low-level raster graphics library
+├── rast_asm.s       # Assembly-optimized raster routines
+├── input.c/h        # Input abstraction module
+├── psg.c/h          # PSG sound chip interface
+├── music.c/h        # Music module
+├── effects.c/h      # Sound effects module
+├── bitmaps.c/h      # Bitmap asset definitions
+├── MENU.C/H         # Main menu bitmap
+├── types.h          # Shared type definitions and constants
+└── makefile         # Build automation
+```
+
+---
+
+## Building
+
+Requires a cross-compilation toolchain targeting the Atari ST (e.g., **VASM** / **GCC for m68k**).
+
+```bash
+make        # Build the game
+make test   # Build and run test drivers
+```
+
+---
+
+## Authors
+
+- **Jacky On**
+- **Ochihai Omuha**
+
+COMP 2659 — Computing Machinery II, Fall 2024  
